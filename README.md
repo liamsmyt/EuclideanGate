@@ -1,6 +1,6 @@
-Euclidean Sequencer
+Euclidean Gate
 
-A simple noise gate plugin made using JUCE framework https://juce.com/
+A simple rhythmic gate plugin made using JUCE framework https://juce.com/
 
 Generates rhythms using Euclidean algorithm as detailed in https://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf
 
