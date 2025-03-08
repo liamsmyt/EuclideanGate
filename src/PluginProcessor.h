@@ -70,8 +70,6 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
 
   juce::StringArray noteLengthOptions = { "1/16", "1/8", "1/4", "1/2", "1 Bar", "2 Bar"};
 
-  void decibelsToGain(float decibels);
-
 
   juce::ADSR adsr;
   juce::ADSR::Parameters adsrParameters;

@@ -30,7 +30,6 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
     decaySlider.addListener(this);
     sustainSlider.addListener(this);
     releaseSlider.addListener(this);
-
     noteLengthSlider.addListener(this);
 
     juce::String comboBoxToolTip = "Click here for presets";

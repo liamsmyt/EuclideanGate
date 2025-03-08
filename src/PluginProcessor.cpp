@@ -23,7 +23,7 @@ TestpluginAudioProcessor::TestpluginAudioProcessor()
               ),
       // Define our VALUE TREE paramters.
       parameters(*this, nullptr, "PARAMETERS",
-                 {std::make_unique<juce::AudioParameterFloat>("decibels", "Decibels", 0.0f,
+                 {std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f,
                                                               1.0f, 0.5f),
                   std::make_unique<juce::AudioParameterBool>("reverse",
                                                              "Reverse", false),
@@ -205,18 +205,6 @@ void TestpluginAudioProcessor::updateSlider() {
   release_float = *parameters.getRawParameterValue("release_float");
 
   gate.setADSRParameters(attack_float, decay_float, sustain_float, release_float);
-
-  decibels = *parameters.getRawParameterValue("decibels");
-  decibelsToGain(decibels);
-  gate.setGain(decibels);
-}
-
-void TestpluginAudioProcessor::decibelsToGain(float decibels){
-  // Converts a float between 1.0 and 0.0 to a decibels(also a float)
-
-
-  float decibels = 0.0;
-
 }
 
 void TestpluginAudioProcessor::calculateNoteLength() {
@@ -300,21 +288,6 @@ void TestpluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   // interleaved by keeping the same state.
   // updateParameters();
   gate.processBlock(buffer, midiMessages);
-
-  for (int channel = 0; channel < totalNumInputChannels; ++channel) {
-    // Get a pointer to the audio data for the current channel
-    float *channelData = buffer.getWritePointer(channel);
-
-    // Access the number of samples in the buffer (e.g., the block size)
-    int numSamples = buffer.getNumSamples();
-
-    // perform the filtering
-
-    // Modify the audio samples in this channel
-    for (int sample = 0; sample < numSamples; ++sample) {
-      channelData[sample] *= g;
-    }
-  }
 }
 
 // This should be disengaged upon a slider being changed?

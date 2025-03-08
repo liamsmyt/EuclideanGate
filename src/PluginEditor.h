@@ -30,11 +30,13 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   void comboBoxChanged(juce::ComboBox* comboBox) override
   {
     audioProcessor.updateComboBox();
+    repaint();
   } 
 
   void sliderValueChanged(juce::Slider* slider) override
   {
     audioProcessor.updateSlider();
+    repaint();
   }
   void drawSliderAndLabel(juce::Slider &slider, juce::Label &label, std::string labelTag, juce::Slider::TextEntryBoxPosition textBoxEntryPosition);
   
@@ -95,6 +97,9 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> noteLengthAttachment;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+
+  float gain = 0.0f;
   
   CustomLookAndFeel customLookAndFeel;
 
