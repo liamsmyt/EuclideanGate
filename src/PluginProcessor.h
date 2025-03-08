@@ -9,6 +9,9 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Gate.h"
+#include "SequencerUI.h"
+#include <regex>
 
 //==============================================================================
 /**
@@ -51,31 +54,68 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   //==============================================================================
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
+  
+  juce::AudioProcessorValueTreeState &getAPVTS() { return parameters; };
 
-  juce::AudioProcessorValueTreeState parameters; 
+  std::vector<int> getEuclidRhythm() { return euclidRhythm; };
+
+  juce::StringArray addEuclidStringOptions();
+
+  juce::StringArray euclidStringOptions = addEuclidStringOptions();
+  
+  void updateSlider();
+  void updateComboBox();
+  
+  private:
+
+  juce::StringArray noteLengthOptions = { "1/16", "1/8", "1/4", "1/2", "1 Bar", "2 Bar"};
+
+  void decibelsToGain(float decibels);
 
 
- private:
-  void updateParameters();
+  juce::ADSR adsr;
+  juce::ADSR::Parameters adsrParameters;
+  void setEuclidParameters(int currentSelection);
 
-  //effects
-  void applyGain(float *channeldata, juce::AudioBuffer<float> &buffer);
-  void applyReverse(float *channeldata, juce::AudioBuffer<float> &buffer);
+  juce::AudioProcessorValueTreeState parameters;
+  void calculateNoteLength();
+  std::vector<int> euclid(int p_size, int n_size, int r_size);
 
-  void calcSS(int sequenceIndex);
-  dsp::Gain<float> gain;
-  juce::AudioPlayHead::PositionInfo positionInfo;
+  std::vector<int> reverseEuclid(std::vector<int> rhythm);
 
-  //Member variables
-  float mGain = 0;
-  double mBpm = 120;
-  int mSampleRate = 0;
-  int mSequenceSamples = 44100;
-  int mSamplesUsed = 0;
-  int mSampleCounter = 0;
-  int mGlitchIndex = 0;
-  int mSequenceIndex = 0;
+  std::vector<int> reversedEuclid;
 
-//==============================================================================
+  bool reverse = 0;
+
+
+  int n_size = 4;
+  int p_size = 4;
+  int r_size = 4;
+
+  std::vector<int> euclidRhythm;
+
+  float note_fraction = 0.0f;
+
+  //Envelope Variables
+  float attack_float = 0.0f;
+  float decay_float = 0.0f;
+  float sustain_float = 0.0f;
+  float release_float = 0.0f;
+
+  //Gate Variables
+  int period_length = 0;
+
+  float calcPeriod = 0.0f;
+
+  Gate gate;
+
+  // Basic variables
+  int sampleRate = 0;
+  int samplesPerBlock = 0;
+  int numChannels = 0;
+  float decibels = 1.0f;
+  juce::dsp::ProcessSpec spec;
+
+  //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TestpluginAudioProcessor)
 };

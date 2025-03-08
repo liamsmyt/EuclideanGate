@@ -14,10 +14,9 @@ juce_add_plugin(ExamplePlugin
     # VERSION ...                                     # Set this if the plugin version is different to the project version
     # ICON_BIG ""   # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     #   ICON_SMALL "${CMAKE_SOURCE_DIR}/Assets/icon16.png " 
-    COMPANY_NAME "Tomoya Matsuura"                    # Specify the name of the plugin's author
-    COMPANY_COPYRIGHT "Tomoya Matsuura"
-    COMPANY_WEBSITE "https://matsuuratomoya.com/"
-    COMPANY_EMAIL "me@matsuuratomoya.com"
+    COMPANY_NAME "lsAudioDesign"                    # Specify the name of the plugin's author
+    COMPANY_COPYRIGHT "lsAudioDesign"
+    COMPANY_EMAIL "liamsmyth2002@gmail.com"
     IS_SYNTH FALSE                       # Is this a synth or an effect?
     # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
@@ -46,7 +45,7 @@ juce_add_plugin(ExamplePlugin
     MICROPHONE_PERMISSION_ENABLED TRUE
     MICROPHONE_PERMISSION_TEXT "This applicaion requires a permission to use an audio input device of your computer. By Default, Built-In microphone will be used."
 
-    PRODUCT_NAME "ExamplePlugin")        # The name of the final 
+    PRODUCT_NAME "Euclidean Sequencer")        # The name of the final 
 
 target_compile_features(ExamplePlugin PUBLIC cxx_std_17)
 
@@ -68,6 +67,9 @@ ${CMAKE_SOURCE_DIR}/assets/juce-logo.svg
 target_sources(ExamplePlugin PRIVATE
     PluginEditor.cpp
     PluginProcessor.cpp
+    LookAndFeel.cpp
+    Gate.cpp
+    SequencerUI.cpp
 )
 
 target_link_libraries(ExamplePlugin PUBLIC
