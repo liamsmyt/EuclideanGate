@@ -13,5 +13,6 @@ Features:
 
 Features in Development:
 - Pitch control
+- More interesting effects than gain to be modulated by the gate
 
 
