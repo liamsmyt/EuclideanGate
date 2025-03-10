@@ -1,4 +1,4 @@
-Euclidean Gate
+<title>Euclidean Gate</title>
 
 A simple rhythmic gate plugin made using JUCE framework https://juce.com/
 
