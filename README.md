@@ -10,8 +10,10 @@ Features:
 - Volume of "off" beats is controllable, range from -INF dB(MIN) to 0 dB(MAX)
 - Sliders to control all inputs for Euclidean algorithm, ADSR envelope, beat length, "off" beats volume
 - Audiovisual display
+- Preset options from mcgill paper e.g. Brazilian Necklace
 
 Features in Development:
 - Pitch control
+- More interesting effects than gain to be modulated by the gate
 
 
