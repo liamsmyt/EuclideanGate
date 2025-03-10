@@ -71,7 +71,10 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   };
   
   private:
+  void scaleADSRParameters(float attack, float decay, float sustain, float release);
   float dbToGain(float decibels);
+
+  juce::ADSR::Parameters adsrParameters;
 
   Gate gate;
 
@@ -79,7 +82,6 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
 
   int currentIndex;
   juce::ADSR adsr;
-  juce::ADSR::Parameters adsrParameters;
   void setEuclidParameters(int currentSelection);
 
   juce::AudioProcessorValueTreeState parameters;

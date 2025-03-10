@@ -206,11 +206,35 @@ void TestpluginAudioProcessor::updateSlider() {
   decay_float = *parameters.getRawParameterValue("sustain_float");
   release_float = *parameters.getRawParameterValue("release_float");
 
+  scaleADSRParameters(attack_float, decay_float, sustain_float, release_float);
+  
+  gate.setADSRParameters(adsrParameters);
+
   gain = dbToGain(*parameters.getRawParameterValue("decibels"));
 
   gate.setGain(gain);
+}
 
-  gate.setADSRParameters(attack_float, decay_float, sustain_float, release_float);
+void TestpluginAudioProcessor::scaleADSRParameters(float attack, float decay, float sustain, float release){
+  /* Make sure ADSR parameters are less than period_length
+  Convert all adsr params to samples
+  e.g. 0.5 + 0.5 + 0.5 + 0.5 = 2s -> 82000samples
+  Now need to fit that in 20000 period length
+  20000 / 18000 = 1/4 
+  Then multiply 1/4 by each of the original parameters and they are now scaled
+  */
+  float totalParams = attack + decay + sustain + release;
+  float totalParamSamples = totalParams * sampleRate;
+  float scaleFactor = period_length / totalParamSamples;
+  attack *= scaleFactor;
+  decay *= scaleFactor;
+  sustain *= scaleFactor;
+  release *= scaleFactor;
+  
+  adsrParameters.attack = attack;
+  adsrParameters.decay = decay;
+  adsrParameters.sustain = sustain;
+  adsrParameters.release = release;
 }
 
 void TestpluginAudioProcessor::calculateNoteLength() {
@@ -374,7 +398,7 @@ juce::StringArray TestpluginAudioProcessor::addEuclidStringOptions() {
   rhythms.add("Arab rhythm, South African/Rumanian Necklace, E(5, 9), Reversed");
   rhythms.add("South Africa, E(5, 12), Reversed");
   rhythms.add("Tuareg rhythm of Libya, E(7, 8), Reversed");
-  rhythms.add("Brazilian necklace, E(7, 16), Reversed");
+  rhythms.add("Brazilian necklace_2, E(7, 16), Reversed");
   rhythms.add("Central Africa, E(11, 24), Reversed");
 
   return rhythms;

@@ -74,6 +74,10 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       decibelSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 25);
       decibelSlider.setTextValueSuffix(" dB");
 
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::black);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::textColourId, juce::Colours::white);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::arrowColourId, juce::Colours::yellow);
+
 
       addAndMakeVisible(adsrLabel);
       addAndMakeVisible(gateLabel);

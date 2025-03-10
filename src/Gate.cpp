@@ -21,12 +21,7 @@ void Gate::prepareToPlay(juce::dsp::ProcessSpec spec, int period_length,
 };
 
 // Set parameters for member ADSR object
-void Gate::setADSRParameters(float attack, float decay, float sustain, float release){
-  adsrParameters.attack = attack;
-  adsrParameters.sustain = sustain;
-  adsrParameters.decay = decay;
-  adsrParameters.release = release;
-
+void Gate::setADSRParameters(juce::ADSR::Parameters adsrParameters){
   for (int ch = 0; ch < numChannels; ++ch) {
     adsrVector[ch].setParameters(adsrParameters);
   }
@@ -113,8 +108,8 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
                     noteState[channel] = false;
                     adsrVector[channel].noteOff();
                   }
-            // channelSamples[i++] *= adsr.getNextSample();
-            channelSamples[i++] *= 0.0f;  // Mute audio
+            float env = adsrVector[channel].getNextSample();
+            channelSamples[i++] *= env;  // Mute audio
             channelSampleIndex[channel]++;
           }
 
@@ -129,13 +124,33 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
         }
 
         case 0: {  // Off state
-          while (channelSampleIndex[channel] < period_length &&
-                 i < bufferSize) {
+          
+          const float gapDuration = 0.2f * period_length;  // 20% of period_length as gap
+          const float onDuration = period_length - gapDuration;
+
+          while (channelSampleIndex[channel] < onDuration && i < bufferSize) {
+                  
+            if (!noteState[channel]) {
+                    noteState[channel] = true;
+                    adsrVector[channel].noteOn();
+                }
             //Channel samples(i) is in relation to buffer passed
             //Channel sample index is in relation to the period length
-            channelSamples[i++] *= gain;  // Modulate by gain
+            float env = adsrVector[channel].getNextSample();
+            channelSamples[i++] *= gain * env;  // Modulate by gain
             channelSampleIndex[channel]++;
           }
+          
+          while (channelSampleIndex[channel] < period_length && i < bufferSize) {
+            if(noteState[channel] == true){
+              noteState[channel] = false;
+              adsrVector[channel].noteOff();
+            }
+          float env = adsrVector[channel].getNextSample();
+          channelSamples[i++] *= env * gain;  // Mute audio
+          channelSampleIndex[channel]++;
+          }
+
           //Once period_length is hit increment/wraparound through rhythmIndex and reset channelSampleIndex to 0
           if (channelSampleIndex[channel] >= period_length) {
             rhythmIndex[channel] =

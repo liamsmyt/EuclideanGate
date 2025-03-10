@@ -15,7 +15,7 @@ class Gate {
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&);
 
-    void setADSRParameters(float attack, float decay, float sustain, float release);
+    void setADSRParameters(juce::ADSR::Parameters adsrParameters);
     void setGain(float gain);
 
     void reset();
@@ -25,9 +25,7 @@ class Gate {
     }
 
     private:
-
     juce::ADSR adsr;
-    juce::ADSR::Parameters adsrParameters;
     std::vector<juce::ADSR> adsrVector;
 
     std::vector<bool> noteState;
@@ -52,6 +50,4 @@ class Gate {
     int numChannels = 0;
 
     float gain = 0;
-
-
 };
