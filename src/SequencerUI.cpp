@@ -6,9 +6,6 @@ void SequencerUI::drawNoteBlocks(juce::Graphics& g) {
 
   const float PI = 3.141592653589793238f;
 
-  // float diameterDifference = outerDiameter - innerDiameter;
-
-
   float diameter = static_cast<float>(width)/static_cast<float>(numCircles);
   if(numCircles < 7){
     diameter = static_cast<float>(width)/5;
@@ -28,11 +25,18 @@ void SequencerUI::drawNoteBlocks(juce::Graphics& g) {
 
     
     if( euclidRhythm[i] == 1){
-      g.setColour(juce::Colours::green);
+      g.setColour(juce::Colours::yellow);
       g.fillEllipse(width/2 + lineX - diameter/2, 
         height/2 + lineY - diameter/2, 
         diameter, diameter);
       }
+
+      if(i == currentIndex){
+        g.setColour(juce::Colours::green);
+        g.fillEllipse(width/2 + lineX - diameter/2, 
+          height/2 + lineY - diameter/2, 
+          diameter, diameter);
+        }
 
       g.setColour(juce::Colours::white);
 

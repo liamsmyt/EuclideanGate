@@ -58,19 +58,26 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   juce::AudioProcessorValueTreeState &getAPVTS() { return parameters; };
 
   std::vector<int> getEuclidRhythm() { return euclidRhythm; };
-
+  
   juce::StringArray addEuclidStringOptions();
-
+  
   juce::StringArray euclidStringOptions = addEuclidStringOptions();
   
   void updateSlider();
   void updateComboBox();
+  void setCurrentIndex(int currentIndex){
+    this->currentIndex = currentIndex;
+    
+  };
   
   private:
+  float dbToGain(float decibels);
+
+  Gate gate;
 
   juce::StringArray noteLengthOptions = { "1/16", "1/8", "1/4", "1/2", "1 Bar", "2 Bar"};
 
-
+  int currentIndex;
   juce::ADSR adsr;
   juce::ADSR::Parameters adsrParameters;
   void setEuclidParameters(int currentSelection);
@@ -82,6 +89,7 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   std::vector<int> reverseEuclid(std::vector<int> rhythm);
 
   std::vector<int> reversedEuclid;
+
 
   bool reverse = 0;
 
@@ -105,14 +113,14 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
 
   float calcPeriod = 0.0f;
 
-  Gate gate;
 
   // Basic variables
   int sampleRate = 0;
   int samplesPerBlock = 0;
   int numChannels = 0;
-  float decibels = 1.0f;
   juce::dsp::ProcessSpec spec;
+
+  float gain = 0.0f;
 
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TestpluginAudioProcessor)

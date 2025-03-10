@@ -42,6 +42,8 @@ TestpluginAudioProcessor::TestpluginAudioProcessor()
                                                             1, 32, 5),
                   std::make_unique<juce::AudioParameterInt>("r_size", "R Size",
                                                             0, 5, 1),
+                  std::make_unique<juce::AudioParameterFloat>("decibels", "Decibels",
+                                                            -100.0f, 0.0f, -16.0f),
                   std::make_unique<juce::AudioParameterChoice>(
                       "note_length", "Note length", noteLengthOptions, 2),
                   std::make_unique<juce::AudioParameterChoice>(
@@ -204,6 +206,10 @@ void TestpluginAudioProcessor::updateSlider() {
   decay_float = *parameters.getRawParameterValue("sustain_float");
   release_float = *parameters.getRawParameterValue("release_float");
 
+  gain = dbToGain(*parameters.getRawParameterValue("decibels"));
+
+  gate.setGain(gain);
+
   gate.setADSRParameters(attack_float, decay_float, sustain_float, release_float);
 }
 
@@ -343,6 +349,10 @@ bool TestpluginAudioProcessor::hasEditor() const {
 juce::AudioProcessorEditor *TestpluginAudioProcessor::createEditor() {
   // return new juce::GenericAudioProcessorEditor(*this);
   return new TestpluginAudioProcessorEditor(*this);
+}
+
+float TestpluginAudioProcessor::dbToGain(float decibels){
+    return std::pow(10.0f, decibels / 20.0f);
 }
 
 juce::StringArray TestpluginAudioProcessor::addEuclidStringOptions() {

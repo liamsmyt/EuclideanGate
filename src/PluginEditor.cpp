@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel.h"
 #include "SequencerUI.h"
+#include "SuffixedSlider.h"
 
 //==============================================================================
 TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
@@ -31,6 +32,7 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
     sustainSlider.addListener(this);
     releaseSlider.addListener(this);
     noteLengthSlider.addListener(this);
+    decibelSlider.addListener(this);
 
     juce::String comboBoxToolTip = "Click here for presets";
     }
@@ -46,6 +48,8 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       decaySlider.removeListener(this);
       sustainSlider.removeListener(this);
       releaseSlider.removeListener(this);
+
+      decibelSlider.removeListener(this);
   
       noteLengthSlider.removeListener(this);
     }
@@ -64,6 +68,12 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       drawSliderAndLabel(releaseSlider, releaseLabel, "R", juce::Slider::TextBoxBelow);
 
       drawSliderAndLabel(noteLengthSlider, noteLengthLabel, "Note Length", juce::Slider::TextBoxBelow);
+
+      drawSliderAndLabel(decibelSlider, decibelLabel, "Offbeat Gain", juce::Slider::TextBoxBelow);
+
+      decibelSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 25);
+      decibelSlider.setTextValueSuffix(" dB");
+
 
       addAndMakeVisible(adsrLabel);
       addAndMakeVisible(gateLabel);
@@ -96,6 +106,9 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       releaseAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.getAPVTS(), "release_float", releaseSlider);
 
+      decibelAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+      audioProcessor.getAPVTS(), "decibels", decibelSlider);
+
       noteLengthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.getAPVTS(), "note_length", noteLengthSlider);
       comboBoxAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
@@ -110,6 +123,7 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       g.setColour(juce::Colours::white);
       g.drawRect(0, 0, width, height, 5);
       
+
       sequencerUI.setEuclidRhythm(audioProcessor.getEuclidRhythm());
       sequencerUI.drawNoteBlocks(g);
 
@@ -182,7 +196,10 @@ void TestpluginAudioProcessorEditor::resized() {
   adsrLabel.setBounds(adsrBounds.getCentreX() - 40, adsrBounds.getY() + 10, 80, 20);
   gateLabel.setBounds(euclidBounds.getCentreX() - 40, adsrBounds.getY() + 10, 80, 20);
 
-  noteLengthSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 100, 50, 50);
-  noteLengthLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 100 - labelOffset, 50, 60);
+  noteLengthSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 75, 50, 50);
+  noteLengthLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 75 - labelOffset, 50, 60);
+
+  decibelSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 150, 50, 50);
+  decibelLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 150 - labelOffset, 50, 60);
 }
 

@@ -83,20 +83,27 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
       /*switch statement to get the correct on/off based on getting the current channel of rhythm and then the current index
       of that channel*/
       switch (rhythmCH[channel][rhythmIndex[channel]]) {
+
+        // if(channel == 0){
+        //   currentIndex = rhythmCH[channel][rhythmIndex[channel]];
+        // }
         case 1: {  // On state
-          const float gapDuration =
-              0.2f * period_length;  // 20% of period_length as gap
+
+          const float gapDuration = 0.2f * period_length;  // 20% of period_length as gap
           const float onDuration = period_length - gapDuration;
 
           // Process active phase
           while (channelSampleIndex[channel] < onDuration && i < bufferSize) {
+            
+            // bool serves purpose of only executing noteOn once
             if (!noteState[channel]) {
               noteState[channel] = true;
               adsrVector[channel].noteOn();
           }
           float env = adsrVector[channel].getNextSample();
           channelSamples[i++] *= env; // Apply envelope to current sample
-          channelSampleIndex[channel]++;
+          channelSampleIndex[channel]++; // Increment to move to next sample in channel
+
           }
 
           // Add gap at end of on phase to add audible gap between two adjacent on phases
@@ -126,7 +133,7 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
                  i < bufferSize) {
             //Channel samples(i) is in relation to buffer passed
             //Channel sample index is in relation to the period length
-            channelSamples[i++] *= 0.0f;  // Mute audio
+            channelSamples[i++] *= gain;  // Modulate by gain
             channelSampleIndex[channel]++;
           }
           //Once period_length is hit increment/wraparound through rhythmIndex and reset channelSampleIndex to 0

@@ -13,6 +13,7 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel.h"
 #include "SequencerUI.h"
+#include "SuffixedSlider.h"
 
 
 //==============================================================================
@@ -61,6 +62,8 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   juce::Slider sustainSlider;
   juce::Slider releaseSlider;
 
+  juce::Slider decibelSlider;
+
   juce::Slider noteLengthSlider;
   
   juce::Label gainLabel;
@@ -71,6 +74,8 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   juce::Label decayLabel;
   juce::Label sustainLabel;
   juce::Label releaseLabel;
+
+  juce::Label decibelLabel;
 
   juce::Label noteLengthLabel;
 
@@ -95,6 +100,8 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sustainAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
+  
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decibelAttachment;
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> noteLengthAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;

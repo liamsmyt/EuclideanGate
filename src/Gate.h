@@ -20,6 +20,10 @@ class Gate {
 
     void reset();
 
+    int getCurrentIndex(){
+        return currentIndex;
+    }
+
     private:
 
     juce::ADSR adsr;
@@ -33,6 +37,7 @@ class Gate {
     float sustain = 0.0f;
     float release = 0.0f;
 
+    int currentIndex = 0;
     
     // Nested vector of rhythms, number of channels determines vertical size
     std::vector<std::vector<int>> rhythmCH;
