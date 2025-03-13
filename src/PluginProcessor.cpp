@@ -47,7 +47,8 @@ TestpluginAudioProcessor::TestpluginAudioProcessor()
                   std::make_unique<juce::AudioParameterChoice>(
                       "note_length", "Note length", noteLengthOptions, 2),
                   std::make_unique<juce::AudioParameterChoice>(
-                      "euclidOptions", "Rhythm", euclidStringOptions, 0)}) {
+                      "euclidOptions", "Rhythm", euclidStringOptions, 0)}),
+                      editor(nullptr) {
 }
 #endif
 
@@ -177,11 +178,9 @@ void TestpluginAudioProcessor::updateComboBox(){
   bool reverse = parameters.getRawParameterValue("reverse")->load() > 0.5f;
   
   if (reverse) {
-    reversedEuclid = reverseEuclid(euclidRhythm);
-    gate.updateGate(period_length, reversedEuclid);
-  } else {
-    gate.updateGate(period_length, euclidRhythm);
+    reverseEuclid();
   }
+  gate.updateGate(period_length, euclidRhythm);
 }
 
 void TestpluginAudioProcessor::updateSlider() {
@@ -195,11 +194,9 @@ void TestpluginAudioProcessor::updateSlider() {
   bool reverse = parameters.getRawParameterValue("reverse")->load() > 0.5f;
   
   if (reverse) {
-    reversedEuclid = reverseEuclid(euclidRhythm);
-    gate.updateGate(period_length, reversedEuclid);
-  } else {
-    gate.updateGate(period_length, euclidRhythm);
+    reverseEuclid();
   }
+    gate.updateGate(period_length, euclidRhythm);
 
   attack_float = *parameters.getRawParameterValue("attack_float");
   sustain_float = *parameters.getRawParameterValue("decay_float");
@@ -317,7 +314,20 @@ void TestpluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   // Alternatively, you can process the samples with the channels
   // interleaved by keeping the same state.
   // updateParameters();
-  gate.processBlock(buffer, midiMessages);
+  if (auto* ed = editor)
+  {
+      juce::MessageManager::callAsync([ed, currentIndex = gate.getCurrentIndex()]()
+      {
+          ed->setCurrentIndex(currentIndex);
+      });
+  }
+
+
+    if(!isBufferSilent(buffer)){
+
+      gate.processBlock(buffer, midiMessages);
+    }
+
 }
 
 // This should be disengaged upon a slider being changed?
@@ -325,11 +335,20 @@ void TestpluginAudioProcessor::setEuclidParameters(int currentSelection) {
   // Takes in string int from combobox
   // Sets n_size, p_size and whether or not is reversed
 
-  juce::String euclidPreset = euclidStringOptions[currentSelection];
-  std::string stdEuclidPreset = euclidPreset.toStdString();
+  juce::String juceEuclidPreset = euclidStringOptions[currentSelection];
+  std::string euclidPreset = juceEuclidPreset.toStdString();
 
   // Check for reversal
-  reverse = !(euclidPreset.contains("not"));
+  float reverseFloat = 0.0f;
+  if(euclidPreset.find("Not") != std::string::npos){
+    reverseFloat = 0.0f;
+  }
+  else{
+    reverseFloat = 1.0f;
+  }
+  auto *reversed = parameters.getParameter("reverse");
+  reversed->setValueNotifyingHost(reverseFloat);
+
 
   // Process E(X, X) and set n_size and p_size accordingly
   //  Find index of (
@@ -339,9 +358,9 @@ void TestpluginAudioProcessor::setEuclidParameters(int currentSelection) {
   std::regex pRegex(R"(\((\d+),)");
   std::regex nRegex(R"(\s(\d+))");
 
-  regex_search(stdEuclidPreset, matches, pRegex);
+  regex_search(euclidPreset, matches, pRegex);
   std::string stringp_size = matches.str(1);
-  regex_search(stdEuclidPreset, matches, nRegex);
+  regex_search(euclidPreset, matches, nRegex);
   std::string stringn_size = matches.str(1);
 
   int n_size = std::stoi(stringn_size);
@@ -404,26 +423,22 @@ juce::StringArray TestpluginAudioProcessor::addEuclidStringOptions() {
   return rhythms;
 }
 
-std::vector<int> TestpluginAudioProcessor::reverseEuclid(
-    std::vector<int> inputVector) {
-  std::vector<int> rhythm = inputVector;
-  int length = rhythm.size();
+void TestpluginAudioProcessor::reverseEuclid() {
+  int length = euclidRhythm.size();
   for (int i = 0; i < length; i++) {
-    switch (rhythm[i]) {
+    switch (euclidRhythm[i]) {
       case 0:
-        rhythm[i] = 1;
+        euclidRhythm[i] = 1;
         break;
 
       case 1:
-        rhythm[i] = 0;
+        euclidRhythm[i] = 0;
         break;
 
       default:
         break;
     }
   }
-
-  return rhythm;
 }
 
 //==============================================================================

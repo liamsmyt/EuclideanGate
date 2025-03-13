@@ -10,7 +10,17 @@ public:
                             float sliderPosProportional, float rotaryStartAngle,
                             float rotaryEndAngle, juce::Slider& slider) override;
                             void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label) override;
+                            void CustomLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 
-private:
+                                
+    void setColourPalette(std::vector<juce::Colour> colourPalette){
+        this->colourPalette = colourPalette;
+    };
+
+    
+    private:
+    std::vector<juce::Colour> colourPalette;
+    
     // Add private helper methods or members here if needed
 };

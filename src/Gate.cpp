@@ -79,10 +79,10 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
       of that channel*/
       switch (rhythmCH[channel][rhythmIndex[channel]]) {
 
-        // if(channel == 0){
-        //   currentIndex = rhythmCH[channel][rhythmIndex[channel]];
-        // }
         case 1: {  // On state
+
+          
+          currentIndex = rhythmIndex[channel];
 
           const float gapDuration = 0.2f * period_length;  // 20% of period_length as gap
           const float onDuration = period_length - gapDuration;
@@ -124,6 +124,9 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
         }
 
         case 0: {  // Off state
+
+          currentIndex = rhythmIndex[channel];
+
           
           const float gapDuration = 0.2f * period_length;  // 20% of period_length as gap
           const float onDuration = period_length - gapDuration;

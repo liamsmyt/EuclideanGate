@@ -11,7 +11,6 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel.h"
 #include "SequencerUI.h"
-#include "SuffixedSlider.h"
 
 //==============================================================================
 TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
@@ -20,6 +19,8 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
     // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
     setSize(350, 400);
+
+    audioProcessor.setEditor(this);
   
     euclidComboBox.addItemList(audioProcessor.euclidStringOptions, 1);
     euclidComboBox.addListener(this);
@@ -34,10 +35,19 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
     noteLengthSlider.addListener(this);
     decibelSlider.addListener(this);
 
-    juce::String comboBoxToolTip = "Click here for presets";
+    
+    reverseToggle.addListener(this);
+    
+    
+    createColourPalette();
+    customLookAndFeel.setColourPalette(colourPalette);
+    sequencerUI.setColourPalette(colourPalette);
+
+    reverseToggle.setLookAndFeel(&customLookAndFeel);
     }
 
     TestpluginAudioProcessorEditor::~TestpluginAudioProcessorEditor() {
+      audioProcessor.setEditor(nullptr);
       euclidComboBox.removeListener(this);
       
       pSlider.removeListener(this);
@@ -50,13 +60,15 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       releaseSlider.removeListener(this);
 
       decibelSlider.removeListener(this);
+
+      reverseToggle.removeListener(this);
   
       noteLengthSlider.removeListener(this);
     }
     
     //==============================================================================
     void TestpluginAudioProcessorEditor::paint(juce::Graphics &g) {
-      g.fillAll(juce::Colours::black);
+      g.fillAll(colourPalette[6]);
 
       drawSliderAndLabel(gainSlider, gainLabel, "Gain", juce::Slider::TextBoxBelow);
       drawSliderAndLabel(nSlider, nLabel, "N", juce::Slider::TextBoxBelow);
@@ -70,13 +82,25 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       drawSliderAndLabel(noteLengthSlider, noteLengthLabel, "Note Length", juce::Slider::TextBoxBelow);
 
       drawSliderAndLabel(decibelSlider, decibelLabel, "Offbeat Gain", juce::Slider::TextBoxBelow);
+  decibelLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
+  decibelLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[6]);
+  noteLengthLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
+  noteLengthLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[6]);
+
+      addAndMakeVisible(reverseLabel);
+      addAndMakeVisible(reverseToggle);
+      reverseToggle.changeWidthToFitText();
+      reverseLabel.setText("Rvrs", juce::dontSendNotification);
+      reverseLabel.setFont(juce::Font(16.0f, juce::Font::bold));
+      reverseLabel.setJustificationType(juce::Justification::centred);
+      reverseLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[0]);
 
       decibelSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 25);
       decibelSlider.setTextValueSuffix(" dB");
 
-      euclidComboBox.setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::black);
-      euclidComboBox.setColour(juce::ComboBox::ColourIds::textColourId, juce::Colours::white);
-      euclidComboBox.setColour(juce::ComboBox::ColourIds::arrowColourId, juce::Colours::yellow);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::backgroundColourId, colourPalette[5]);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::textColourId, colourPalette[0]);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::arrowColourId, colourPalette[0]);
 
 
       addAndMakeVisible(adsrLabel);
@@ -85,15 +109,15 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       adsrLabel.setFont(juce::Font(16.0f, juce::Font::bold));
       adsrLabel.setJustificationType(juce::Justification::centred);
       adsrLabel.setJustificationType(juce::Justification::centred);
-      adsrLabel.setColour(juce::Label::ColourIds::backgroundColourId, juce::Colours::white);
-      adsrLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
+      adsrLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
+      adsrLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
 
       gateLabel.setText("Gate Controls", juce::dontSendNotification);
       gateLabel.setFont(juce::Font(16.0f, juce::Font::bold));
       gateLabel.setJustificationType(juce::Justification::centred);
       gateLabel.setJustificationType(juce::Justification::centred);
-      gateLabel.setColour(juce::Label::ColourIds::backgroundColourId, juce::Colours::white);
-      gateLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::black);
+      gateLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
+      gateLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
 
       nAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.getAPVTS(), "n_size", nSlider);
@@ -110,6 +134,9 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       releaseAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.getAPVTS(), "release_float", releaseSlider);
 
+      reverseAttachment= std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), "reverse", reverseToggle);
+
       decibelAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.getAPVTS(), "decibels", decibelSlider);
 
@@ -124,16 +151,19 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       int width = getWidth();
       int height = getHeight();
 
-      g.setColour(juce::Colours::white);
+      g.setColour(colourPalette[0]);
       g.drawRect(0, 0, width, height, 5);
       
-
+      sequencerUI.setCurrentIndex(currentIndex);
       sequencerUI.setEuclidRhythm(audioProcessor.getEuclidRhythm());
       sequencerUI.drawNoteBlocks(g);
 
-      g.setColour(juce::Colours::white);
+      // g.setColour(juce::Colours::white);
+      g.setColour(colourPalette[0]);
       g.drawLine(euclidBounds.getRight(), euclidBounds.getY(), euclidBounds.getRight(), euclidBounds.getBottom(), 5);
       g.drawLine(bounds.getRight() - 85, sequencerBounds.getBottom() - 3, bounds.getRight(), sequencerBounds.getBottom() -3, 5);
+
+      g.drawLine(bounds.getRight() - 85, sidebarBounds.getCentreY(), bounds.getRight(), sidebarBounds.getCentreY(), 5);
 }
 
 void TestpluginAudioProcessorEditor::drawSliderAndLabel(juce::Slider &slider, juce::Label &label, std::string labelTag, 
@@ -142,11 +172,13 @@ void TestpluginAudioProcessorEditor::drawSliderAndLabel(juce::Slider &slider, ju
   slider.setTextBoxStyle(textBoxEntryPosition, false, 30, 25);
   slider.setTextBoxIsEditable(false);
   slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  slider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::white);
+  slider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId, colourPalette[0]);
+  slider.setColour(juce::Slider::ColourIds::textBoxTextColourId, colourPalette[0]);
 
   label.setText(labelTag, juce::dontSendNotification);
   label.setFont(juce::Font(12.0f, juce::Font::bold));
   label.setJustificationType(juce::Justification::centred);
+  label.setColour(juce::Label::ColourIds::textColourId, colourPalette[0]);
 
 
   addAndMakeVisible(label);
@@ -160,7 +192,7 @@ void TestpluginAudioProcessorEditor::resized() {
   int width = bounds.getWidth();
 
   // Define area for sequencer component
-  auto sidebarBounds = bounds.removeFromTop(height - static_cast<float>(height)/3);
+  sidebarBounds = bounds.removeFromTop(height - static_cast<float>(height)/3);
   sequencerBounds = sidebarBounds.removeFromRight(width - 80);
   sequencerUI.setBounds(sequencerBounds);
 
@@ -172,7 +204,7 @@ void TestpluginAudioProcessorEditor::resized() {
   int euclidX = euclidBounds.getX() + 2;
   int euclidY = euclidBounds.getY() - 10;
 
-  int thirdX = static_cast<float>(euclidWidth) / 3;
+  int thirdX = static_cast<float>(euclidWidth) / 4;
   int halfY = static_cast<float>(euclidHeight) / 2;
 
   int labelOffset = 40;
@@ -182,6 +214,8 @@ void TestpluginAudioProcessorEditor::resized() {
   pLabel.setBounds(euclidX + thirdX, euclidY + (halfY - labelOffset), 50, 60);
   rSlider.setBounds(euclidX + (thirdX * 2) , euclidY + halfY, 50, 50);
   rLabel.setBounds(euclidX + (thirdX * 2) , euclidY + (halfY - labelOffset), 50, 60);
+  reverseToggle.setBounds(euclidX + 5 + (thirdX * 3) , euclidY + (halfY + 10), 120, 30);
+  reverseLabel.setBounds(euclidX  - 5 + (thirdX * 3) , euclidY + (halfY - labelOffset + 10), 50, 60);
 
   euclidX = euclidBounds.getRight();
   int quarterX = static_cast<float>(euclidWidth) / 4;
@@ -200,10 +234,10 @@ void TestpluginAudioProcessorEditor::resized() {
   adsrLabel.setBounds(adsrBounds.getCentreX() - 40, adsrBounds.getY() + 10, 80, 20);
   gateLabel.setBounds(euclidBounds.getCentreX() - 40, adsrBounds.getY() + 10, 80, 20);
 
-  noteLengthSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 75, 50, 50);
-  noteLengthLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 75 - labelOffset, 50, 60);
+  noteLengthSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() - 60, 50, 50);
+  noteLengthLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() - 60 - labelOffset, 50, 35);
 
-  decibelSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 150, 50, 50);
-  decibelLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getY() + 150 - labelOffset, 50, 60);
+  decibelSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() + 65, 50, 50);
+  decibelLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() + 65 - labelOffset, 50, 35);
 }
 

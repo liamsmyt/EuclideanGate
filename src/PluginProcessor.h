@@ -13,6 +13,8 @@
 #include "SequencerUI.h"
 #include <regex>
 
+class TestpluginAudioProcessorEditor;
+
 //==============================================================================
 /**
  */
@@ -25,6 +27,11 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   //==============================================================================
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
   void releaseResources() override;
+
+  void setEditor(TestpluginAudioProcessorEditor* newEditor)
+    {
+        editor = newEditor;
+    }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
   bool isBusesLayoutSupported(const BusesLayout &layouts) const override;
@@ -65,12 +72,9 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   
   void updateSlider();
   void updateComboBox();
-  void setCurrentIndex(int currentIndex){
-    this->currentIndex = currentIndex;
-    
-  };
   
   private:
+  TestpluginAudioProcessorEditor* editor;
   void scaleADSRParameters(float attack, float decay, float sustain, float release);
   float dbToGain(float decibels);
 
@@ -88,7 +92,7 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   void calculateNoteLength();
   std::vector<int> euclid(int p_size, int n_size, int r_size);
 
-  std::vector<int> reverseEuclid(std::vector<int> rhythm);
+  void reverseEuclid();
 
   std::vector<int> reversedEuclid;
 
@@ -123,6 +127,17 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   juce::dsp::ProcessSpec spec;
 
   float gain = 0.0f;
+
+  bool isBufferSilent(const juce::AudioBuffer<float>& buffer, float threshold = 1.0e-6f)
+{
+    // Check the magnitude of the buffer
+    float magnitude = buffer.getMagnitude(0, buffer.getNumSamples());
+
+    // If the magnitude is below the threshold, the buffer is considered silent
+    return magnitude < threshold;
+}
+
+  juce::AudioPlayHead::PositionInfo posInfo;
 
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TestpluginAudioProcessor)

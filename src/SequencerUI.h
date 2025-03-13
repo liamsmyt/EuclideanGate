@@ -17,12 +17,18 @@ class SequencerUI {
         this->currentIndex = currentIndex;
     };
 
+    void setColourPalette(std::vector<juce::Colour> colourPalette){
+        this->colourPalette = colourPalette;
+    };
+
     void setBounds(juce::Rectangle<int> bounds);
     
 
 
     
     private:
+
+    std::vector<juce::Colour> colourPalette;
 
     float width = 0;
     float height = 0;

@@ -13,13 +13,12 @@
 #include "PluginProcessor.h"
 #include "LookAndFeel.h"
 #include "SequencerUI.h"
-#include "SuffixedSlider.h"
 
 
 //==============================================================================
 /**
  */
-class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::ComboBox::Listener, public juce::Slider::Listener {
+class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::ComboBox::Listener, public juce::Slider::Listener, public juce::Button::Listener {
  public:
   TestpluginAudioProcessorEditor(TestpluginAudioProcessor &);
   ~TestpluginAudioProcessorEditor() override;
@@ -39,10 +38,45 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
     audioProcessor.updateSlider();
     repaint();
   }
+
+  void buttonClicked(juce::Button* button) override
+  {
+    audioProcessor.updateSlider();
+    repaint();
+  }
+
+  void setCurrentIndex(int currentIndex){
+    this->currentIndex = currentIndex;
+    repaint();
+  }
+
+  void createColourPalette(){
+    juce::Colour defaultGrey = juce::Colour(130, 130, 130);;
+    juce::Colour red = juce::Colour(209,17,65);
+    juce::Colour green = juce::Colour(0,177,89);
+    juce::Colour blue = juce::Colour(0,174,219);
+    juce::Colour orange = juce::Colour(243,119,53);
+    juce::Colour yellow = juce::Colours::yellow;
+    juce::Colour white = juce::Colour(242,240,239);
+    juce::Colour red2 = juce::Colour(140,12,44);
+    colourPalette.push_back(defaultGrey);
+    colourPalette.push_back(red);
+    colourPalette.push_back(green);
+    colourPalette.push_back(blue);
+    colourPalette.push_back(orange);
+    colourPalette.push_back(yellow);
+    colourPalette.push_back(white);
+    colourPalette.push_back(red2);
+  }
+  
   void drawSliderAndLabel(juce::Slider &slider, juce::Label &label, std::string labelTag, juce::Slider::TextEntryBoxPosition textBoxEntryPosition);
   
   
   private:
+
+  std::vector<juce::Colour> colourPalette;
+
+  int currentIndex;
 
   std::vector<int> euclidRhythm;
   
@@ -63,6 +97,9 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   juce::Slider releaseSlider;
 
   juce::Slider decibelSlider;
+
+  juce::ToggleButton reverseToggle;
+  juce::Label reverseLabel;
 
   juce::Slider noteLengthSlider;
   
@@ -86,6 +123,7 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
 
   juce::Rectangle<int> sequencerBounds;
   juce::Rectangle<int> euclidBounds;
+  juce::Rectangle<int> sidebarBounds;
 
   SequencerUI sequencerUI;
   
@@ -100,6 +138,8 @@ class TestpluginAudioProcessorEditor : public juce::AudioProcessorEditor, public
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sustainAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
+
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> reverseAttachment;
   
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decibelAttachment;
 

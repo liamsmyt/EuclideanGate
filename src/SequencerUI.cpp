@@ -13,7 +13,7 @@ void SequencerUI::drawNoteBlocks(juce::Graphics& g) {
   float conversionConstant = PI / 180.0f;
   float scale = width/3.5;
   float increment = 360.0f/static_cast<float>(numCircles);
-  g.setColour(juce::Colours::black);
+  g.setColour(colourPalette[6]);
   g.fillRect(0, 0, static_cast<int>(width), static_cast<int>(height));
 
   for(int i = 0; i<numCircles; i++){
@@ -25,20 +25,55 @@ void SequencerUI::drawNoteBlocks(juce::Graphics& g) {
 
     
     if( euclidRhythm[i] == 1){
-      g.setColour(juce::Colours::yellow);
-      g.fillEllipse(width/2 + lineX - diameter/2, 
-        height/2 + lineY - diameter/2, 
-        diameter, diameter);
+
+      // Define the colors for the gradient
+      juce::Colour startColour = colourPalette[7];    // Starting color
+      juce::Colour endColour = colourPalette[1];     // Ending color
+      
+      // Define the ellipse's bounds
+      float ellipseX = width / 2 + lineX - diameter / 2;
+      float ellipseY = height / 2 + lineY - diameter / 2;
+      juce::Rectangle<float> ellipseBounds(ellipseX, ellipseY, diameter, diameter);
+      
+      // Create a radial gradient
+      juce::ColourGradient gradient(
+          startColour, ellipseBounds.getCentre(), // Start color and center point
+          endColour, ellipseBounds.getTopLeft(),  // End color and radial point
+          true                                   // Radial gradient
+      );
+      
+      // Set the gradient as the fill for the graphics context
+      g.setGradientFill(gradient);
+      
+      // Fill the ellipse with the gradient
+      g.fillEllipse(ellipseBounds);
       }
 
       if(i == currentIndex){
-        g.setColour(juce::Colours::green);
-        g.fillEllipse(width/2 + lineX - diameter/2, 
-          height/2 + lineY - diameter/2, 
-          diameter, diameter);
+            // Define the colors for the gradient
+    juce::Colour startColour = colourPalette[4];    // Starting color
+    juce::Colour endColour = colourPalette[5];     // Ending color
+
+    // Define the ellipse's bounds
+    float ellipseX = width / 2 + lineX - diameter / 2;
+    float ellipseY = height / 2 + lineY - diameter / 2;
+    juce::Rectangle<float> ellipseBounds(ellipseX, ellipseY, diameter, diameter);
+
+    // Create a radial gradient
+    juce::ColourGradient gradient(
+        startColour, ellipseBounds.getCentre(), // Start color and center point
+        endColour, ellipseBounds.getTopLeft(),  // End color and radial point
+        true                                   // Radial gradient
+    );
+
+    // Set the gradient as the fill for the graphics context
+    g.setGradientFill(gradient);
+
+    // Fill the ellipse with the gradient
+    g.fillEllipse(ellipseBounds);
         }
 
-      g.setColour(juce::Colours::white);
+      g.setColour(colourPalette[0]);
 
     g.drawEllipse(width/2 + lineX - diameter/2, 
       height/2 + lineY - diameter/2, 
