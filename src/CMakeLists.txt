@@ -45,7 +45,7 @@ juce_add_plugin(ExamplePlugin
     MICROPHONE_PERMISSION_ENABLED TRUE
     MICROPHONE_PERMISSION_TEXT "This applicaion requires a permission to use an audio input device of your computer. By Default, Built-In microphone will be used."
 
-    PRODUCT_NAME "Euclidean Sequencer")        # The name of the final 
+    PRODUCT_NAME "Euclidean Gate")        # The name of the final 
 
 target_compile_features(ExamplePlugin PUBLIC cxx_std_17)
 
