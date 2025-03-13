@@ -7,7 +7,7 @@ void Gate::prepareToPlay(juce::dsp::ProcessSpec spec, int period_length,
   this->period_length = period_length;
   this->rhythm = rhythm;
   
-  // Set channelNums for member vectors
+  // Set numChannels in member vectors
   noteState.resize(numChannels, 0);
   adsrVector.resize(numChannels, adsr);
   channelSampleIndex.resize(numChannels, 0);
@@ -44,8 +44,17 @@ void Gate::updateGate(int period_length, std::vector<int> rhythm) {
 
 
 void Gate::reset() {
-  channelSampleIndex.resize(numChannels, 0);
-  rhythmIndex.resize(numChannels, 0);
+    // Reset indices for all channels to 0
+    channelSampleIndex.assign(numChannels, 0);
+    rhythmIndex.assign(numChannels, 0);
+    
+    // Reset adsr note states to false
+    noteState.assign(numChannels, false);
+    
+    // Reset adsr envelopes for all channels
+    for (auto& adsr : adsrVector) {
+        adsr.reset();
+    }
 }
 
 void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
@@ -159,6 +168,7 @@ void Gate::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
             rhythmIndex[channel] =
                 (rhythmIndex[channel] + 1) % rhythm.size();
             channelSampleIndex[channel] = 0;
+            adsrVector[channel].reset();
           }
           break;
         }

@@ -79,13 +79,13 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       drawSliderAndLabel(sustainSlider, sustainLabel, "S", juce::Slider::TextBoxBelow);
       drawSliderAndLabel(releaseSlider, releaseLabel, "R", juce::Slider::TextBoxBelow);
 
-      drawSliderAndLabel(noteLengthSlider, noteLengthLabel, "Note Length", juce::Slider::TextBoxBelow);
+      drawSliderAndLabel(noteLengthSlider, noteLengthLabel, "Note Duration", juce::Slider::TextBoxBelow);
 
       drawSliderAndLabel(decibelSlider, decibelLabel, "Offbeat Gain", juce::Slider::TextBoxBelow);
-  decibelLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
-  decibelLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[6]);
-  noteLengthLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
-  noteLengthLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[6]);
+    decibelLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
+    decibelLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[6]);
+    noteLengthLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
+    noteLengthLabel.setColour(juce::Label::ColourIds::textColourId, colourPalette[6]);
 
       addAndMakeVisible(reverseLabel);
       addAndMakeVisible(reverseToggle);
@@ -98,9 +98,9 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       decibelSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 25);
       decibelSlider.setTextValueSuffix(" dB");
 
-      euclidComboBox.setColour(juce::ComboBox::ColourIds::backgroundColourId, colourPalette[5]);
-      euclidComboBox.setColour(juce::ComboBox::ColourIds::textColourId, colourPalette[0]);
-      euclidComboBox.setColour(juce::ComboBox::ColourIds::arrowColourId, colourPalette[0]);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::backgroundColourId, colourPalette[0]);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::textColourId, colourPalette[6]);
+      euclidComboBox.setColour(juce::ComboBox::ColourIds::arrowColourId, colourPalette[6]);
 
 
       addAndMakeVisible(adsrLabel);
@@ -112,7 +112,7 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       adsrLabel.setColour(juce::Label::ColourIds::backgroundColourId, colourPalette[1]);
       adsrLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
 
-      gateLabel.setText("Gate Controls", juce::dontSendNotification);
+      gateLabel.setText("Rhythm Generation", juce::dontSendNotification);
       gateLabel.setFont(juce::Font(16.0f, juce::Font::bold));
       gateLabel.setJustificationType(juce::Justification::centred);
       gateLabel.setJustificationType(juce::Justification::centred);
@@ -158,7 +158,6 @@ TestpluginAudioProcessorEditor::TestpluginAudioProcessorEditor(
       sequencerUI.setEuclidRhythm(audioProcessor.getEuclidRhythm());
       sequencerUI.drawNoteBlocks(g);
 
-      // g.setColour(juce::Colours::white);
       g.setColour(colourPalette[0]);
       g.drawLine(euclidBounds.getRight(), euclidBounds.getY(), euclidBounds.getRight(), euclidBounds.getBottom(), 5);
       g.drawLine(bounds.getRight() - 85, sequencerBounds.getBottom() - 3, bounds.getRight(), sequencerBounds.getBottom() -3, 5);
@@ -204,21 +203,20 @@ void TestpluginAudioProcessorEditor::resized() {
   int euclidX = euclidBounds.getX() + 2;
   int euclidY = euclidBounds.getY() - 10;
 
-  int thirdX = static_cast<float>(euclidWidth) / 4;
+  int quarterX = static_cast<float>(euclidWidth) / 4;
   int halfY = static_cast<float>(euclidHeight) / 2;
 
   int labelOffset = 40;
   nSlider.setBounds(euclidX, euclidY + halfY, 50, 50);
   nLabel.setBounds(euclidX, euclidY + (halfY - labelOffset), 50, 60);
-  pSlider.setBounds(euclidX + thirdX, euclidY + halfY, 50, 50);
-  pLabel.setBounds(euclidX + thirdX, euclidY + (halfY - labelOffset), 50, 60);
-  rSlider.setBounds(euclidX + (thirdX * 2) , euclidY + halfY, 50, 50);
-  rLabel.setBounds(euclidX + (thirdX * 2) , euclidY + (halfY - labelOffset), 50, 60);
-  reverseToggle.setBounds(euclidX + 5 + (thirdX * 3) , euclidY + (halfY + 10), 120, 30);
-  reverseLabel.setBounds(euclidX  - 5 + (thirdX * 3) , euclidY + (halfY - labelOffset + 10), 50, 60);
+  pSlider.setBounds(euclidX + quarterX, euclidY + halfY, 50, 50);
+  pLabel.setBounds(euclidX + quarterX, euclidY + (halfY - labelOffset), 50, 60);
+  rSlider.setBounds(euclidX + (quarterX * 2) , euclidY + halfY, 50, 50);
+  rLabel.setBounds(euclidX + (quarterX * 2) , euclidY + (halfY - labelOffset), 50, 60);
+  reverseToggle.setBounds(euclidX + 5 + (quarterX * 3) , euclidY + (halfY + 10), 120, 30);
+  reverseLabel.setBounds(euclidX  - 5 + (quarterX * 3) , euclidY + (halfY - labelOffset + 10), 50, 60);
 
   euclidX = euclidBounds.getRight();
-  int quarterX = static_cast<float>(euclidWidth) / 4;
 
   attackSlider.setBounds(euclidX, euclidY + halfY, 50, 50);
   attackLabel.setBounds(euclidX, euclidY + (halfY - labelOffset), 50, 60);
@@ -230,14 +228,14 @@ void TestpluginAudioProcessorEditor::resized() {
   releaseLabel.setBounds(euclidX + (quarterX * 3) , euclidY + (halfY - labelOffset), 50, 60);
 
 
-  euclidComboBox.setBounds(sequencerBounds.getRight() - 80, sequencerBounds.getY(), 80, 20);
+  euclidComboBox.setBounds(sequencerBounds.getRight() - 85, sequencerBounds.getY(), 85, 20);
   adsrLabel.setBounds(adsrBounds.getCentreX() - 40, adsrBounds.getY() + 10, 80, 20);
-  gateLabel.setBounds(euclidBounds.getCentreX() - 40, adsrBounds.getY() + 10, 80, 20);
+  gateLabel.setBounds(euclidBounds.getCentreX() - 58, adsrBounds.getY() + 10, 120, 20);
 
-  noteLengthSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() - 60, 50, 50);
-  noteLengthLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() - 60 - labelOffset, 50, 35);
+  noteLengthSlider.setBounds(sequencerBounds.getRight() - 67, sidebarBounds.getCentreY() - 60, 50, 50);
+  noteLengthLabel.setBounds(sequencerBounds.getRight() - 67, sidebarBounds.getCentreY() - 60 - labelOffset, 50, 35);
 
-  decibelSlider.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() + 65, 50, 50);
-  decibelLabel.setBounds(sequencerBounds.getRight() - 70, sidebarBounds.getCentreY() + 65 - labelOffset, 50, 35);
+  decibelSlider.setBounds(sequencerBounds.getRight() - 67, sidebarBounds.getCentreY() + 65, 50, 50);
+  decibelLabel.setBounds(sequencerBounds.getRight() - 67, sidebarBounds.getCentreY() + 65 - labelOffset, 50, 35);
 }
 

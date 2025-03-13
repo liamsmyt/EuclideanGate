@@ -126,6 +126,8 @@ class TestpluginAudioProcessor : public juce::AudioProcessor {
   int numChannels = 0;
   juce::dsp::ProcessSpec spec;
 
+  int resetIncrement = 0;
+
   float gain = 0.0f;
 
   bool isBufferSilent(const juce::AudioBuffer<float>& buffer, float threshold = 1.0e-6f)

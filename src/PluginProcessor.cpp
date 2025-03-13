@@ -21,7 +21,7 @@ TestpluginAudioProcessor::TestpluginAudioProcessor()
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
               ),
-      // Define our VALUE TREE paramters.
+      // Define our apvts paramters
       parameters(*this, nullptr, "PARAMETERS",
                  {std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f,
                                                               1.0f, 0.5f),
@@ -314,6 +314,8 @@ void TestpluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   // Alternatively, you can process the samples with the channels
   // interleaved by keeping the same state.
   // updateParameters();
+
+  // Threading to prevent crash :)
   if (auto* ed = editor)
   {
       juce::MessageManager::callAsync([ed, currentIndex = gate.getCurrentIndex()]()
@@ -322,11 +324,17 @@ void TestpluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       });
   }
 
+  if(!isBufferSilent(buffer) || posInfo.getIsPlaying()){
 
-    if(!isBufferSilent(buffer)){
-
-      gate.processBlock(buffer, midiMessages);
+    gate.processBlock(buffer, midiMessages);
+  }
+  else{
+    resetIncrement++;
+    if(resetIncrement > 6){
+      gate.reset();
+      resetIncrement = 0;
     }
+  }
 
 }
 

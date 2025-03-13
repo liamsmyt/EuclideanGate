@@ -30,6 +30,7 @@ class SequencerUI {
 
     std::vector<juce::Colour> colourPalette;
 
+    float scale = 0.0f;
     float width = 0;
     float height = 0;
     int currentIndex = 0;

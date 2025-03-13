@@ -8,10 +8,16 @@ void SequencerUI::drawNoteBlocks(juce::Graphics& g) {
 
   float diameter = static_cast<float>(width)/static_cast<float>(numCircles);
   if(numCircles < 7){
-    diameter = static_cast<float>(width)/5;
+    diameter = static_cast<float>(width)/6;
+    scale = width/3.5;
+  }
+  else if (numCircles < 16){
+    scale = width/3;
+  }
+  else{
+    scale = width/2.5;
   }
   float conversionConstant = PI / 180.0f;
-  float scale = width/3.5;
   float increment = 360.0f/static_cast<float>(numCircles);
   g.setColour(colourPalette[6]);
   g.fillRect(0, 0, static_cast<int>(width), static_cast<int>(height));
