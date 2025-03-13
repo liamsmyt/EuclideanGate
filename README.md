@@ -15,4 +15,5 @@ Features:
 Features in Development:
 - More interesting effects to be modulated by the gate
 
+![pluginScreenshot](EG-Screenshot.png)
 
