@@ -13,7 +13,7 @@ Features:
 - Preset options from mcgill paper e.g. Brazilian Necklace
 
 Features in Development:
-- More interesting effects to be modulated by the gate
+- New effects to be modulated by the gate
 
 ![pluginScreenshot](EG-Screenshot.png)
 
