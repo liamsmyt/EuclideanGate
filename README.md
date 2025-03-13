@@ -13,7 +13,6 @@ Features:
 - Preset options from mcgill paper e.g. Brazilian Necklace
 
 Features in Development:
-- Pitch control
-- More interesting effects than gain to be modulated by the gate
+- More interesting effects to be modulated by the gate
 
 
